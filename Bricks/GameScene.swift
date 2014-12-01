@@ -21,11 +21,16 @@ let colors: [SKColor] = [
 ]
 
 let blockSize: CGFloat = 18.0
+let defaultSpeed = NSTimeInterval(1200)
 
 class GameScene: SKScene {
+    var dropTime = defaultSpeed
+    var lastUpdate:NSDate?
+
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
         self.anchorPoint = CGPoint(x: 0, y: 1.0)
+        lastUpdate = NSDate()
     }
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
@@ -38,6 +43,12 @@ class GameScene: SKScene {
    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
+        if lastUpdate != nil {
+            let elapsed = lastUpdate!.timeIntervalSinceNow * -1000.0
+            if elapsed > dropTime {
+                moveTetrominoesDown()
+            }
+        }
     }
     
     func drawTetrominoAtPoint(location: CGPoint) {
@@ -55,5 +66,13 @@ class GameScene: SKScene {
                 }
             }
         }
+    }
+    
+    func moveTetrominoesDown() {
+        let squares = self.children as [SKSpriteNode]
+        for square in squares {
+            square.position.y += CGFloat(-blockSize)
+        }
+        lastUpdate = NSDate()
     }
 }
