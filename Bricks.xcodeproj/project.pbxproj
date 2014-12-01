@@ -14,6 +14,7 @@
 		1F2A21E81A2C18800068FD7D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F2A21E71A2C18800068FD7D /* Images.xcassets */; };
 		1F2A21EB1A2C18800068FD7D /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1F2A21E91A2C18800068FD7D /* LaunchScreen.xib */; };
 		1F2A21F71A2C18800068FD7D /* BricksTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2A21F61A2C18800068FD7D /* BricksTests.swift */; };
+		1F2A22011A2C55F90068FD7D /* Tetromino.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F2A22001A2C55F90068FD7D /* Tetromino.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +39,7 @@
 		1F2A21F01A2C18800068FD7D /* BricksTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BricksTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F2A21F51A2C18800068FD7D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1F2A21F61A2C18800068FD7D /* BricksTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BricksTests.swift; sourceTree = "<group>"; };
+		1F2A22001A2C55F90068FD7D /* Tetromino.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tetromino.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +83,7 @@
 			children = (
 				1F2A21DC1A2C18800068FD7D /* AppDelegate.swift */,
 				1F2A21E01A2C18800068FD7D /* GameScene.swift */,
+				1F2A22001A2C55F90068FD7D /* Tetromino.swift */,
 				1F2A21E21A2C18800068FD7D /* GameViewController.swift */,
 				1F2A21E41A2C18800068FD7D /* Main.storyboard */,
 				1F2A21E71A2C18800068FD7D /* Images.xcassets */,
@@ -218,6 +221,7 @@
 				1F2A21E11A2C18800068FD7D /* GameScene.swift in Sources */,
 				1F2A21E31A2C18800068FD7D /* GameViewController.swift in Sources */,
 				1F2A21DD1A2C18800068FD7D /* AppDelegate.swift in Sources */,
+				1F2A22011A2C55F90068FD7D /* Tetromino.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
