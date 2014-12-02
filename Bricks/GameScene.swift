@@ -90,6 +90,18 @@ class GameScene: SKScene {
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
         /* Called when a touch begins */
+        for touch: AnyObject in touches {
+            let location = touch.locationInNode(self)
+            let gameBoardFrame = gameBoard.calculateAccumulatedFrame()
+            
+            if location.x < gameBoardFrame.origin.x {
+                moveTetrominoTo(.Left)
+            } else if location.x > gameBoardFrame.origin.x + gameBoardFrame.width {
+                moveTetrominoTo(.Right)
+            } else if CGRectContainsPoint(gameBoardFrame, location) {
+                rotateTetromino()
+            }
+        }
     }
    
     override func update(currentTime: CFTimeInterval) {
@@ -97,38 +109,69 @@ class GameScene: SKScene {
         if lastUpdate != nil {
             let elapsed = lastUpdate!.timeIntervalSinceNow * -1000.0
             if elapsed > dropTime {
-                moveTetrominoDown()
+                moveTetrominoTo(.Down)
             }
         }
     }
     
-    func moveTetrominoDown() {
-        if landed() {
-            gameBitmapStatic.removeAll(keepCapacity: true)
-            gameBitmapStatic = gameBitmapDynamic
+    func moveTetrominoTo(direction: Direction) {
+        if collidedWith(direction) == false {
+            activeTetromino.moveTo(direction)
             
-            activeTetromino = Tetromino()
-            centerActiveTetromino()
+            if direction == .Down {
+                lastUpdate = NSDate()
+            }
         } else {
-            activeTetromino.moveTo(.Down)
-            
+            if direction == .Down {
+                gameBitmapStatic.removeAll(keepCapacity: true)
+                gameBitmapStatic = gameBitmapDynamic
+                
+                activeTetromino = Tetromino()
+                centerActiveTetromino()
+                
+                lastUpdate = NSDate()
+            }
         }
         
-        lastUpdate = NSDate()
         refresh()
     }
     
-    func landed() -> Bool {
-        let x = activeTetromino.position.x
-        let y = activeTetromino.position.y + 1
-        for row in 0..<activeTetromino.bitmap.count {
-            for col in 0..<activeTetromino.bitmap[row].count {
-                if activeTetromino.bitmap[row][col] > 0 && gameBitmapStatic[y + row][x + col + 1] > 0 {
-                    return true
+    func rotateTetromino() {
+        activeTetromino.rotate()
+        
+        if collidedWith(.None) {
+            activeTetromino.rotate(rotation: .Clockwise)
+        } else {
+            refresh()
+        }
+    }
+    
+    func collidedWith(direction: Direction) -> Bool {
+        func collided(x: Int, y: Int) -> Bool {
+            for row in 0..<activeTetromino.bitmap.count {
+                for col in 0..<activeTetromino.bitmap[row].count {
+                    if activeTetromino.bitmap[row][col] > 0 && gameBitmapStatic[y + row][x + col + 1] > 0 {
+                        return true
+                    }
                 }
             }
+            
+            return false
         }
-        return false
+        
+        let x = activeTetromino.position.x
+        let y = activeTetromino.position.y
+        
+        switch direction {
+        case .Left:
+            return collided(x - 1, y)
+        case .Right:
+            return collided(x + 1, y)
+        case .Down:
+            return collided(x, y + 1)
+        case .None:
+            return collided(x, y)
+        }
     }
     
     func refresh() {
