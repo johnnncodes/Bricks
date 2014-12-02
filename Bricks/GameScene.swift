@@ -100,6 +100,8 @@ class GameScene: SKScene {
                 moveTetrominoTo(.Right)
             } else if CGRectContainsPoint(gameBoardFrame, location) {
                 rotateTetromino()
+            } else if location.y < gameBoardFrame.origin.y {
+                instaDrop()
             }
         }
     }
@@ -123,13 +125,8 @@ class GameScene: SKScene {
             }
         } else {
             if direction == .Down {
-                gameBitmapStatic.removeAll(keepCapacity: true)
-                gameBitmapStatic = gameBitmapDynamic
-                
-                activeTetromino = Tetromino()
-                centerActiveTetromino()
-                
-                lastUpdate = NSDate()
+                refresh()
+                return
             }
         }
         
@@ -172,6 +169,51 @@ class GameScene: SKScene {
         case .None:
             return collided(x, y)
         }
+    }
+    
+    func clearLines() {
+        var linesToClear = [Int]()
+        for row in 0..<gameBitmapDynamic.count - 1 {
+            var isLine = true
+            for col in 0..<gameBitmapDynamic[0].count {
+                if gameBitmapDynamic[row][col] == 0 {
+                    isLine = false
+                }
+            }
+            
+            if isLine {
+                linesToClear.append(row)
+            }
+        }
+        
+        if linesToClear.count > 0 {
+            for line in linesToClear {
+                gameBitmapDynamic.removeAtIndex(line)
+                gameBitmapDynamic.insert([8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8], atIndex: 1)
+            }
+        }
+    }
+    
+    func instaDrop() {
+        while collidedWith(.Down) == false {
+            activeTetromino.moveTo(.Down)
+            updateGameBitmap()
+            
+        }
+        didLand()
+    }
+    
+    func didLand() {
+        clearLines()
+        
+        gameBitmapStatic.removeAll(keepCapacity: true)
+        gameBitmapStatic = gameBitmapDynamic
+        
+        activeTetromino = Tetromino()
+        centerActiveTetromino()
+        
+        refresh()
+        lastUpdate = NSDate()
     }
     
     func refresh() {
