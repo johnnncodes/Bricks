@@ -53,7 +53,10 @@ class GameScene: SKScene {
     var lastUpdate:NSDate?
     
     let gameBoard = SKSpriteNode()
+    let nextTetrominoDisplay = SKSpriteNode()
+    
     var activeTetromino = Tetromino()
+    var nextTetromino = Tetromino()
     
     var gameBitmapDynamic = gameBitmapDefault
     var gameBitmapStatic = gameBitmapDefault
@@ -80,6 +83,9 @@ class GameScene: SKScene {
         centerActiveTetromino()
         refresh()
         lastUpdate = NSDate()
+        
+        nextTetrominoDisplay.anchorPoint = CGPoint(x: 0, y: 1.0)
+        showNextTetromino()
     }
     
     func centerActiveTetromino() {
@@ -125,7 +131,7 @@ class GameScene: SKScene {
             }
         } else {
             if direction == .Down {
-                refresh()
+                didLand()
                 return
             }
         }
@@ -209,8 +215,11 @@ class GameScene: SKScene {
         gameBitmapStatic.removeAll(keepCapacity: true)
         gameBitmapStatic = gameBitmapDynamic
         
-        activeTetromino = Tetromino()
+        activeTetromino = nextTetromino
         centerActiveTetromino()
+        
+        nextTetromino = Tetromino()
+        showNextTetromino()
         
         refresh()
         lastUpdate = NSDate()
@@ -247,6 +256,30 @@ class GameScene: SKScene {
                 }
                 ++currentSquare
             }
+        }
+    }
+    
+    func showNextTetromino() {
+        nextTetrominoDisplay.removeAllChildren()
+        
+        for row in 0..<nextTetromino.bitmap.count {
+            for col in 0..<nextTetromino.bitmap[row].count {
+                if nextTetromino.bitmap[row][col] > 0 {
+                    let bit = nextTetromino.bitmap[row][col]
+                    let square = SKSpriteNode(color: colors[bit], size: CGSize(width: blockSize, height: blockSize))
+                    square.anchorPoint = CGPoint(x: 0, y: 1.0)
+                    square.position = CGPoint(x: col * Int(blockSize) + col, y: -row * Int(blockSize) + -row)
+                    nextTetrominoDisplay.addChild(square)
+                }
+            }
+        }
+        
+        let nextTetrominoDisplayFrame = nextTetrominoDisplay.calculateAccumulatedFrame()
+        let gameBoardFrame = gameBoard.calculateAccumulatedFrame()
+        nextTetrominoDisplay.position = CGPoint(x: gameBoardFrame.origin.x + gameBoardFrame.width - nextTetrominoDisplayFrame.width, y: -30)
+        
+        if nextTetrominoDisplay.parent == nil {
+            self.addChild(nextTetrominoDisplay)
         }
     }
 }
