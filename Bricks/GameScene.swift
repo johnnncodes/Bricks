@@ -60,6 +60,13 @@ class GameScene: SKScene {
     
     var gameBitmapDynamic = gameBitmapDefault
     var gameBitmapStatic = gameBitmapDefault
+    
+    let scoreLabel = SKLabelNode()
+    let levelLabel = SKLabelNode()
+    
+    var score = 0
+    var level = 1
+    var nextLevel = 3000
 
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
@@ -86,6 +93,8 @@ class GameScene: SKScene {
         
         nextTetrominoDisplay.anchorPoint = CGPoint(x: 0, y: 1.0)
         showNextTetromino()
+        
+        updateScoreWith(points: 0)
     }
     
     func centerActiveTetromino() {
@@ -127,6 +136,7 @@ class GameScene: SKScene {
             activeTetromino.moveTo(direction)
             
             if direction == .Down {
+                updateScoreWith()
                 lastUpdate = NSDate()
             }
         } else {
@@ -197,11 +207,15 @@ class GameScene: SKScene {
                 gameBitmapDynamic.removeAtIndex(line)
                 gameBitmapDynamic.insert([8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8], atIndex: 1)
             }
+            
+            var multiplier = linesToClear.count == 4 ? 10 : 1
+            updateScoreWith(points: linesToClear.count * linesToClear.count * linesToClear.count)
         }
     }
     
     func instaDrop() {
         while collidedWith(.Down) == false {
+            updateScoreWith(points: 2)
             activeTetromino.moveTo(.Down)
             updateGameBitmap()
             
@@ -280,6 +294,41 @@ class GameScene: SKScene {
         
         if nextTetrominoDisplay.parent == nil {
             self.addChild(nextTetrominoDisplay)
+        }
+    }
+    
+    func updateScoreWith(points: Int = 1) {
+        if scoreLabel.parent == nil && levelLabel.parent == nil {
+            let gameBoardFrame = gameBoard.calculateAccumulatedFrame()
+            
+            scoreLabel.text = "Score: \(score)"
+            scoreLabel.fontSize = 20.0
+            scoreLabel.fontColor = SKColor.whiteColor()
+            scoreLabel.horizontalAlignmentMode = .Left
+            scoreLabel.position = CGPoint(x: gameBoardFrame.origin.x, y: -scoreLabel.frame.height - 50)
+            self.addChild(scoreLabel)
+            
+            levelLabel.text = "Level: \(level)"
+            levelLabel.fontSize = 20.0
+            levelLabel.fontColor = SKColor.whiteColor()
+            levelLabel.horizontalAlignmentMode = .Left
+            levelLabel.position = CGPoint(x: scoreLabel.frame.origin.x, y: -levelLabel.frame.height - scoreLabel.frame.height - 50 - 10)
+            self.addChild(levelLabel)
+        }
+        
+        score += points * level * level
+        scoreLabel.text = "Score: \(score)"
+        
+        if score > nextLevel {
+            levelLabel.text = "Level: \(++level)"
+            nextLevel = Int(2.5 * Double(nextLevel))
+            
+            if dropTime - 150 <= 0 {
+                // Maximum speed
+                dropTime = 100
+            } else {
+                dropTime -= 150
+            }
         }
     }
 }
